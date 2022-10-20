@@ -1,0 +1,107 @@
+
+//***** Time filtering through multiple arrays in Typescript *****//
+
+Desc:
+We need a function for filtering time, i.e. free hours and minutes, during working time hours in Typescript.
+Technically have some arrays, the first is the working hours (which should be filtered based on the numbers from the other two arrays), 
+the second contains all the beginnings of the terms and the third the endings of the same terms.
+We also have one variable which represent duration in minutes of selected service. 
+
+Example:
+workHours =  [9, 10, 11, 12, 13, 14, 15, 16] - work hours time represent range from 6 to 20
+workMinutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55] - always the same range like this one from 0 to 55
+
+startTime = ['14:15', '9:00', '13:00'] - variable string which represent start time of occupied terms in hh:mm format, can be in any range like workHours
+endTime = ['16:00', '11:00', '15:00'] - variable string which represent end time of occupied terms in hh:mm format, can be in any range like workHours
+
+serviceDuration = 25 - represent duration of chosen service in minutes - always is single const number
+(we will use different numbers in test later)
+
+Need us filtering workHours array based on startTime and endTime items, also with one check does startTime or endTime with serviceDuration is not bigger than free workHours.
+I will explain better last part of this in Case III. Also need us filtered work minutes for every filtered work hours. 
+
+
+
+//===== Case I without service duration check =====//
+
+workHours =  [9, 10, 11, 12, 13, 14, 15, 16]
+workMinutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+
+startTime = ['14:15', '9:00', '13:00', '15:25', '10:05']
+endTime = ['15:00', '10:00', '13:20', '15:55', '11:10']
+
+RESULTS: 
+filteredWorkHours = [11, 12, 13, 14]
+
+for work hour 11 - filteredWorkMinutes = [10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+for work hour 12 - filteredWorkMinutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+for work hour 13 - filteredWorkMinutes = [20, 25, 30, 35, 40, 45, 50, 55]
+for work hour 14 - filteredWorkMinutes = [0, 5, 10]
+
+
+
+
+//===== Case II same case as first but with service duration check =====//
+
+workHours =  [9, 10, 11, 12, 13, 14, 15, 16]
+workMinutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+serviceDuration = 25;
+
+startTime = ['14:15', '9:00', '13:00', '15:25', '10:05']
+endTime = ['15:00', '10:00', '13:20', '15:55', '11:10']
+
+RESULTS: 
+filteredWorkHours = [11, 12, 13]
+
+* not 14 any more because serviceDuration is larger than minutes which left for 14 
+(only first 15 minutes left but service duration is 25 minutes - that is only different than first case)
+
+for work hour 11 - filteredWorkMinutes = [10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+for work hour 12 - filteredWorkMinutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+for work hour 13 - filteredWorkMinutes = [20, 25, 30, 35, 40, 45, 50, 55]
+
+
+
+
+//===== Case III =====//
+
+workHours =  [10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+workMinutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+serviceDuration = 15;
+
+startTime = ['10:35', '10:20', '12:00', '15:25', '14:35']
+endTime = ['11:00', '10:35', '14:20', '15:55', '15:05']
+
+RESULTS: 
+filteredWorkHours = [10, 11, 14, 15, 16, 17, 18, 19]
+
+for work hour 10 - filteredWorkMinutes = [0, 5]
+for work hour 11 - filteredWorkMinutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+for work hour 14 - filteredWorkMinutes = [20]
+for work hour 15 - filteredWorkMinutes = [0, 5, 10, 55]
+for work hours 16, 17, 18, 19 - filteredWorkMinutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+
+* serviceDuration check is used here also
+
+
+
+//===== Case IV =====//
+
+workHours =  [15, 16, 17, 18, 19, 20, 21]
+workMinutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+serviceDuration = 45;
+
+startTime = ['20:15', '15:00', '18:00', '16:25', '17:15']
+endTime = ['21:00', '15:35', '20:10', '17:05', '17:45']
+
+RESULTS: 
+filteredWorkHours = [21]
+* only 21 because rest minutes of other hours is to small for service duration of 45 minutes
+
+for work hour 21 - filteredWorkMinutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+
+
+
+
+
+
